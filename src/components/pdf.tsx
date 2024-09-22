@@ -117,15 +117,29 @@ const PdfViewer: React.FC = () => {
 
       {/* Display PDF Viewer only if pdfDocument is loaded */}
       {pdfDocument && totalPages > 0 && (
-        <div
-          style={{
-            marginTop: '20px',
-            padding: '20px', // Some padding
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={{  marginTop: '20px' }}>
+          <div style={{ marginRight: '20px' }}>
+            {/* Sidebar with page numbers */}
+            {Array.from({ length: totalPages }, (_, index) => (
+              <button
+                key={index + 1}
+                style={{
+                  marginBottom: '10px',
+                  padding: '10px',
+                  backgroundColor: currentPage === index + 1 ? '#4CAF50' : '#f1f1f1',
+                  color: currentPage === index + 1 ? '#fff' : '#000',
+                }}
+                onClick={() => {
+                  setCurrentPage(index + 1);
+                  renderPage(index + 1);
+                }}
+              >
+                Page {index + 1}
+              </button>
+            ))}
+          </div>
+
+          <div>
             <button onClick={() => {
               if (currentPage > 1) {
                 setCurrentPage(currentPage - 1);
@@ -163,12 +177,11 @@ const PdfViewer: React.FC = () => {
             style={{
               width: '80%',
               marginLeft: '150px',
-              borderRadius: '18px',
+              borderRadius: '16px',
               background: '#b0b0b0',
               boxShadow: '6px 6px 8px #929292,  -6px -6px 8px #cecece',
             }}
-          />
-        </div>
+          />        </div>
       )}
     </div>
   );
