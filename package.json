@@ -1,6 +1,6 @@
 {
-  "name": "suthras-pdf",
-  "version": "0.1.2",
+  "name": "suthraspdf",
+  "version": "1.0.0",
   "private": false,
   "main": "src/components/pdf.tsx",
   "dependencies": {
@@ -42,5 +42,21 @@
   },
   "devDependencies": {
     "worker-loader": "^3.0.8"
-  }
+  },
+  "description": "custom pdf viewer test",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nandeesh393/my-pdf.git"
+  },
+  "keywords": [
+    "custom",
+    "pdfViewer",
+    "reactpdf"
+  ],
+  "author": "Sudhanva Teggihal,Amrutha Hiremath,Nandeesh A M,Supriya B",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nandeesh393/my-pdf/issues"
+  },
+  "homepage": "https://github.com/nandeesh393/my-pdf#readme"
 }
