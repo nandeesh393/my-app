@@ -1,6 +1,6 @@
 {
   "name": "suthraspdf",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": false,
   "main": "src/components/pdf.tsx",
   "dependencies": {
@@ -18,7 +18,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "tsc",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
