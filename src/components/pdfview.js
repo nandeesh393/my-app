@@ -5,21 +5,22 @@ import 'pdfjs-dist/web/pdf_viewer.css';
 // Set the worker source manually by referring to a CDN or local file
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
 
-const PdfViewer: React.FC = () => {
-  const [file, setFile] = useState<File | null>(null);
-  const [pdfDocument, setPdfDocument] = useState<any>(null);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [totalPages, setTotalPages] = useState<number>(0);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const renderTaskRef = useRef<any>(null);
+const PdfViewer = () => {
+  const [file, setFile] = useState(null); // State to hold the selected file
+  const [pdfDocument, setPdfDocument] = useState(null); // State to hold the loaded PDF document
+  const [currentPage, setCurrentPage] = useState(1); // State for the current page number
+  const [totalPages, setTotalPages] = useState(0); // State for total pages in the PDF
+  const canvasRef = useRef(null);
+  const renderTaskRef = useRef(null);
 
-  const renderPage = async (pageNumber: number) => {
+  // Function to load and render a specific page
+  const renderPage = async (pageNumber) => {
     if (renderTaskRef.current) {
-      renderTaskRef.current.cancel();
+      renderTaskRef.current.cancel(); // Cancel any ongoing render task
     }
 
     try {
-      const page = await pdfDocument.getPage(pageNumber);
+      const page = await pdfDocument.getPage(pageNumber); // Get the specified page
       const scale = 1.5;
       const viewport = page.getViewport({ scale });
       const canvas = canvasRef.current;
@@ -35,7 +36,7 @@ const PdfViewer: React.FC = () => {
         };
 
         renderTaskRef.current = page.render(renderContext);
-        await renderTaskRef.current.promise;
+        await renderTaskRef.current.promise; // Wait for rendering to complete
       }
     } catch (error) {
       console.error('Error rendering page:', error);
@@ -47,17 +48,17 @@ const PdfViewer: React.FC = () => {
       if (file) {
         const fileReader = new FileReader();
         fileReader.onload = async function () {
-          const typedArray = new Uint8Array(this.result as ArrayBuffer);
+          const typedArray = new Uint8Array(this.result);
           const pdf = await pdfjsLib.getDocument(typedArray).promise;
           setPdfDocument(pdf);
-          setTotalPages(pdf.numPages);
+          setTotalPages(pdf.numPages); // Set the total number of pages
           await renderPage(1); // Render the first page
         };
         fileReader.readAsArrayBuffer(file);
       }
     };
 
-    loadPdf(); // Call loadPdf when file changes
+    loadPdf(); // Call loadPdf when the file changes
 
     return () => {
       if (renderTaskRef.current) {
@@ -66,11 +67,11 @@ const PdfViewer: React.FC = () => {
     };
   }, [file]);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (event) => {
     const selectedFile = event.target.files?.[0];
     if (selectedFile && selectedFile.type === 'application/pdf') {
       setFile(selectedFile);
-      setCurrentPage(1); // Reset to first page when a new file is loaded
+      setCurrentPage(1); // Reset to the first page when a new file is loaded
       setPdfDocument(null); // Reset pdfDocument to trigger loading
     } else {
       alert('Please select a valid PDF file.');

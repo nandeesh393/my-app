@@ -1,8 +1,8 @@
 {
   "name": "suthraspdf",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "private": false,
-  "main": "src/components/pdf.tsx",
+  "main": "src/components/pdfview.js",
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -18,7 +18,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "tsc",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
