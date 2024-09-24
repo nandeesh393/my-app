@@ -36,21 +36,23 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 import React, { useState, useEffect, useRef } from 'react';
 import * as pdfjsLib from 'pdfjs-dist/build/pdf';
+import 'pdfjs-dist/web/pdf_viewer.css';
+// Set the worker source manually by referring to a CDN or local file
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
 var PdfViewer = function () {
-    var _a = useState(null), file = _a[0], setFile = _a[1]; // State to hold the selected file
-    var _b = useState(null), pdfDocument = _b[0], setPdfDocument = _b[1]; // To store the loaded PDF document
-    var _c = useState(1), currentPage = _c[0], setCurrentPage = _c[1]; // State for the current page number
-    var _d = useState(0), totalPages = _d[0], setTotalPages = _d[1]; // Total number of pages
+    var _a = useState(null), file = _a[0], setFile = _a[1];
+    var _b = useState(null), pdfDocument = _b[0], setPdfDocument = _b[1];
+    var _c = useState(1), currentPage = _c[0], setCurrentPage = _c[1];
+    var _d = useState(0), totalPages = _d[0], setTotalPages = _d[1];
     var canvasRef = useRef(null);
     var renderTaskRef = useRef(null);
-    // Function to load and render a specific page
     var renderPage = function (pageNumber) { return __awaiter(void 0, void 0, void 0, function () {
         var page, scale, viewport, canvas, context, renderContext, error_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     if (renderTaskRef.current) {
-                        renderTaskRef.current.cancel(); // Cancel any ongoing render task
+                        renderTaskRef.current.cancel();
                     }
                     _a.label = 1;
                 case 1:
@@ -72,7 +74,7 @@ var PdfViewer = function () {
                     renderTaskRef.current = page.render(renderContext);
                     return [4 /*yield*/, renderTaskRef.current.promise];
                 case 3:
-                    _a.sent(); // Wait for rendering to complete
+                    _a.sent();
                     _a.label = 4;
                 case 4: return [3 /*break*/, 6];
                 case 5:
@@ -87,8 +89,7 @@ var PdfViewer = function () {
         var loadPdf = function () { return __awaiter(void 0, void 0, void 0, function () {
             var fileReader;
             return __generator(this, function (_a) {
-                pdfjsLib.GlobalWorkerOptions.workerSrc = "//cdnjs.cloudflare.com/ajax/libs/pdf.js/".concat(pdfjsLib.version, "/pdf.worker.js");
-                try {
+                if (file) {
                     fileReader = new FileReader();
                     fileReader.onload = function () {
                         return __awaiter(this, void 0, void 0, function () {
@@ -101,74 +102,43 @@ var PdfViewer = function () {
                                     case 1:
                                         pdf = _a.sent();
                                         setPdfDocument(pdf);
-                                        setTotalPages(pdf.numPages); // Set total number of pages
+                                        setTotalPages(pdf.numPages);
                                         return [4 /*yield*/, renderPage(1)];
                                     case 2:
-                                        _a.sent(); // Render the first page initially
+                                        _a.sent(); // Render the first page
                                         return [2 /*return*/];
                                 }
                             });
                         });
                     };
-                    if (file) {
-                        fileReader.readAsArrayBuffer(file); // Read the file as ArrayBuffer
-                    }
-                }
-                catch (error) {
-                    console.error('Error loading PDF document:', error);
+                    fileReader.readAsArrayBuffer(file);
                 }
                 return [2 /*return*/];
             });
         }); };
-        if (pdfDocument) {
-            renderPage(currentPage);
-        }
+        loadPdf(); // Call loadPdf when file changes
         return function () {
             if (renderTaskRef.current) {
                 renderTaskRef.current.cancel();
             }
         };
-    }, [pdfDocument, currentPage]);
-    // Handle file selection
+    }, [file]);
     var handleFileChange = function (event) {
         var _a;
         var selectedFile = (_a = event.target.files) === null || _a === void 0 ? void 0 : _a[0];
         if (selectedFile && selectedFile.type === 'application/pdf') {
             setFile(selectedFile);
-            setCurrentPage(1); // Reset to the first page
-            setPdfDocument(null); // Reset the document to reload
+            setCurrentPage(1); // Reset to first page when a new file is loaded
+            setPdfDocument(null); // Reset pdfDocument to trigger loading
         }
         else {
             alert('Please select a valid PDF file.');
         }
     };
-    // Handle showing the PDF in the same window
-    var handleShowPdf = function () {
-        if (file) {
-            var fileReader_1 = new FileReader();
-            fileReader_1.onload = function () { return __awaiter(void 0, void 0, void 0, function () {
-                var typedArray, pdf;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0:
-                            typedArray = new Uint8Array(fileReader_1.result);
-                            return [4 /*yield*/, pdfjsLib.getDocument(typedArray).promise];
-                        case 1:
-                            pdf = _a.sent();
-                            setPdfDocument(pdf);
-                            setTotalPages(pdf.numPages); // Set total number of pages
-                            setCurrentPage(1); // Render the first page
-                            return [2 /*return*/];
-                    }
-                });
-            }); };
-            fileReader_1.readAsArrayBuffer(file); // Read the file as ArrayBuffer
-        }
-    };
     return (React.createElement("div", null,
         React.createElement("div", null,
             React.createElement("input", { type: "file", accept: "application/pdf", onChange: handleFileChange, style: { marginBottom: '10px' } }),
-            React.createElement("button", { onClick: handleShowPdf, disabled: !file }, "Show PDF")),
+            React.createElement("button", { onClick: function () { return pdfDocument && renderPage(currentPage); }, disabled: !file }, "Show PDF")),
         pdfDocument && totalPages > 0 && (React.createElement("div", { style: { marginTop: '20px' } },
             React.createElement("div", { style: { marginRight: '20px' } }, Array.from({ length: totalPages }, function (_, index) { return (React.createElement("button", { key: index + 1, style: {
                     marginBottom: '10px',
@@ -182,16 +152,8 @@ var PdfViewer = function () {
                 "Page ",
                 index + 1)); })),
             React.createElement("div", null,
-                React.createElement("button", { onClick: function () {
-                        if (currentPage > 1) {
-                            setCurrentPage(currentPage - 1);
-                        }
-                    }, disabled: currentPage === 1 }, "Previous"),
-                React.createElement("button", { onClick: function () {
-                        if (currentPage < totalPages) {
-                            setCurrentPage(currentPage + 1);
-                        }
-                    }, disabled: currentPage === totalPages }, "Next"),
+                React.createElement("button", { onClick: function () { return currentPage > 1 && setCurrentPage(currentPage - 1); }, disabled: currentPage === 1 }, "Previous"),
+                React.createElement("button", { onClick: function () { return currentPage < totalPages && setCurrentPage(currentPage + 1); }, disabled: currentPage === totalPages }, "Next"),
                 React.createElement("p", null,
                     "Page",
                     ' ',
@@ -199,6 +161,7 @@ var PdfViewer = function () {
                             var page = parseInt(e.target.value, 10);
                             if (page > 0 && page <= totalPages) {
                                 setCurrentPage(page);
+                                renderPage(page); // Render the selected page immediately
                             }
                         }, style: { width: '50px' } }),
                     ' ',

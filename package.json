@@ -1,7 +1,7 @@
 {
   "name": "suthras-pdf",
   "version": "0.1.2",
-  "private": true,
+  "private": false,
   "main": "src/components/pdf.tsx",
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
